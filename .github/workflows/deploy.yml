@@ -27,12 +27,14 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v6
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
       
       - name: Install dependencies
         run: npm ci
@@ -61,31 +63,36 @@ jobs:
       cancel-in-progress: false
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - uses: actions/setup-node@v6
+ 
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+ 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
       
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Github pages
-        run: |
-            REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2-)
-            PATH_PREFIX="/$REPO_NAME/"
-            npm run eleventy:prod
-
+      - name: Build site with Eleventy
+        env:
+          PATH_PREFIX: "/${{ github.event.repository.name }}/"
+        run: npm run eleventy:prod
+ 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload _site
-          path: _site
+          path: ./_site
+     
+      - name: Upload generic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: ./_site
 
 
   # deploy job
