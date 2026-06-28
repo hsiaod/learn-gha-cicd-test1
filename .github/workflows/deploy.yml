@@ -1,0 +1,115 @@
+name: deploy
+
+on: 
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Node Version ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: |
+        npm ci
+        
+    - name: Run all linters
+      run: |
+        npm run lint:all
+
+    - name: Run all scripts
+      run: |
+        node url-checker.js -t ${{ vars.URL_CHECKER_TIMEOUT }} -d src/posts 
+
+    
+
+  build:
+    environment: production
+    env:
+      PATH_PREFIX: ${{ vars.PATH_PREFIX }}
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Node Version ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: |
+        npm ci
+
+    - name: Build static pages
+      run: |
+        npm run eleventy:prod
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: "_site"
+        path: "_site"
+  
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: ['build', 'test']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: "_site"
+          path: "_site"
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
+      - name: Deploy to Github pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Add Deployment Issue
+        run: |
+          gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
+
+          gh issue create \
+            --title "$(date +'%Y-%m-%d') - Deployment: ${{ job.status }}" \
+            --body "URL: ${{ steps.deployment.outputs.page_url }}"
