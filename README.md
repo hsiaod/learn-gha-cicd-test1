@@ -210,3 +210,7 @@ spruecss-eleventy-documentation-template/
 
     ...
     ```
+
+# Submission
+- Repository link: https://github.com/J4ninja/cd13461-github-actions-project-starter
+- Knowledge base link: https://j4ninja.github.io/cd13461-github-actions-project-starter/
