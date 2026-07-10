@@ -210,3 +210,214 @@ spruecss-eleventy-documentation-template/
 
     ...
     ```
+
+
+## Project Rubric
+Use this project rubric to understand and assess the project criteria.
+
+### Workflow Setup
+<table border=2>
+    <tr>
+        <th>Criteria</th>
+        <th>Submission Requirements</th>
+    </tr>
+    <tr>
+        <td>Create GitHub Action workflow files</td>
+        <td>
+            <ul>
+                <li>Demonstrate your ability to write GitHub Action workflows in YAML syntax.
+                <li>The workflow will have at least 3 distinct jobs (test, build, deploy).
+                <li>If the jobs are named differently, the names selected should be adequate and fit for purpose.
+                <li>All the jobs in the workflow need to run without any errors.
+                <li>Your repository should show successful workflow runs.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Configure workflows for different triggers with appropriate filters</td>
+        <td>
+            <ul>
+                <li>A workflow run must be triggered (at least) by push, pull_request, and workflow_dispatch events.
+                <li>Branch and path filters must be applied as per the requirements provided in the project description.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Configure permissions used by the workflow jobs</td>
+        <td>
+            <ul>
+                <li>Do not overuse and request unnecessary permissions for their workflow runs. Only use what is necessary for the workflow to meet the requirements.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Correctly configure concurrency</td>
+        <td>
+            <ul>
+                <li>Use concurrency to limit the number of simultaneous workflow runs.
+                <li>If 2 workflows are triggered by 2 distinct events, only the most recent one should be allowed to run. The previous one (or many) must be canceled.
+                <li>The concurrency group name that you choose must be relevant and lead to the expected behavior.
+            </ul>
+        </td>
+    </tr>
+</table>
+
+### Test Job
+<table border=2>
+    <tr>
+        <th>Criteria</th>
+        <th>Submission Requirements</th>
+    </tr>
+    <tr>
+        <td>Use of the appropriate GitHub-hosted runner type</td>
+        <td>
+            <ul>
+                <li>Select an adequate GitHub-hosted runner for your job, which is ubuntu-latest.
+                <li>If you choose a macOS or Windows runner, justify its usage otherwise, you are inefficiently using costly resources.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Configure environment variables at the job level</td>
+        <td>
+            <ul>
+                <li>Configure repository environment variables to be available for the test job. The repository variables will be used in one of the steps and must be made available beforehand.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Use 1st party actions</td>
+        <td>
+            <ul>
+                <li>Use <a href="https://github.com/actions/checkout"><code>actions/checkout@v4</code></a> to check out a copy of their repository for the test job.
+                <li>Use <a href="https://github.com/actions/setup-node"><code>actions/setup-node@v4</code></a> to install and configure Node version 18 or later.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Use <a href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun"><code>jobs.&lt;job_id>.steps[*].run</code></a> to run shell commands
+        </td>
+        <td>
+            <ul>
+                <li>Adequately use <a href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun"><code>jobs.&lt;job_id>.steps[*].run</code></a> to run shell commands
+                <li>Install dependencies
+                <li>Run the linters and other test scripts
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Use the cache service to speed up workflow runs</td>
+        <td>
+            <ul>
+                <li>Use and properly configure <a href="https://github.com/actions/cache"><code>actions/cache@v4</code></a> to store the node_modules folder with a good cache key to prevent the costly download of dependencies in the build job but also in subsequent workflow runs.
+            <ul>
+        </td>
+    </tr>
+</table>
+
+### Build Job
+<table border=2>
+    <tr>
+        <th>Criteria</th>
+        <th>Submission Requirements</th>
+    </tr>
+    <tr>
+        <td>Use job dependency with <a href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds"><code>jobs.&lt;job_id>.needs</code></a></td>
+        <td>
+            <ul>
+                <li>Use <a href="https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds"><code>jobs.&lt;job_id>.needs</code></a> to make sure that the build job does not run if the test job fails.
+                <li>This is an important requirement.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Use 1st party actions</td>
+        <td>
+            <ul>
+                <li>Use <a href="https://github.com/actions/checkout"><code>actions/checkout@v4</code></a> to check out a copy of their repository for the test job.
+                <li>Use <a href="https://github.com/actions/setup-node"><code>actions/setup-node@v4</code></a> to install and configure Node version 18 or later.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Use the cache service to speed up workflow runs</td>
+        <td>
+            <ul>
+                <li>Use and properly configure <a href="https://github.com/actions/cache"><code>actions/cache@v4</code></a> to store the node_modules folder with a good cache key to prevent the costly download of dependencies in the build job but also in subsequent workflow runs.
+            <ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Define step level dynamic environment variable</td>
+        <td>
+        Contrary to repository variables, environment variables can also be defined at the level of a step and can be dynamic.
+            <ul>
+                <li>Define the <code>PATH_PREFIX</code> variable which should contain their repository name between 2 forward slashes, for example: <code>/&lt;repository name>/</code>
+                <li>This variable will be used to configure the <code>pathPrefix</code> value for 11ty to make sure the static assets and urls are properly configured to work with GitHub pages.
+            </ul>
+        </td>
+    </tr>
+  <tr>
+        <td>Use GitHub Actions artifacts to store the build output</td>
+        <td>
+            <ul>
+                <li>Use GitHub Actions artifacts to upload a zip file containing the build artifacts, mainly the contents of the <code>_site/</code> folder.
+                <li>Use <a href="https://github.com/actions/upload-pages-artifact"><code>actions/upload-pages-artifact@v3</code></a> to upload the folder.
+            <ul>
+        </td>
+    </tr>
+</table>
+
+### Deploy Job
+<table border=2>
+    <tr>
+        <th>Criteria</th>
+        <th>Submission Requirements</th>
+    </tr>
+    <tr>
+        <td>Correctly define the GitHub Pages environment</td>
+        <td>
+            <ul>
+                <li>Correctly define the GitHub pages environment required for the deploy job.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Deploy correctly to GitHub Pages</td>
+        <td>
+            <ul>
+                <li>The output of the build job must be correctly deployed to GitHub pages so that when anyone navigates to the GitHub pages URL, they will see a fully functioning knowledge base website.
+                <li>All the links must work and all assets must be loaded correctly. If any assets are missing (CSS, Javascript, or Images) something is misconfigured.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Correctly using <code>GITHUB_TOKEN</code> to authenticate to the GitHub APIs</td>
+        <td>
+            <ul>
+                <li>Use <code>GITHUB_TOKEN</code> with the <code>issues: write</code> permission to authenticate to the GitHub APIs in order to create the summary issue.
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>Must use GitHub CLI to create the summary issue</td>
+        <td>
+            <ul>
+                <li>Use the authenticated GitHub CLI to create the summary issue.
+                <li>The title and body of the issue must be as specified in the requirements for this project.
+                <li>The issue must be created successfully.
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<table border=1>
+    <tr><td>
+    <h3>Suggestions to Make Your Project Stand Out</h3>
+    <ol>
+        <li>Provide more insightful information in the summary issue created after a successful deployment. One idea would be to include links to all the changes that were deployed or even a file diff.
+        <li>Combine the repository checkout, Node setup and node_modules caching steps into a reusable. workflow that is hosted in a separate repository
+        <li>Create an additional script to automatically test some functionality of the knowledge base, store it in script/ and add it to your test job.
+    </ol>
+    </td></tr>
+</table>

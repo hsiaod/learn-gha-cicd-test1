@@ -1,0 +1,158 @@
+name: Deployment Workflow
+
+on:
+  # workflow trigger events
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - ".gitignore"
+  #     - "README.md"
+  #     - "CONTRIBUTING.md"
+  #     - "LICENSE"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "LICENSE"
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: ${{ contains(github.ref, 'main/')}}
+
+env:
+  # URL checker timeout in seconds
+  URL_CHECKER_TIMEOUT: 120
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+ 
+      - name: Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          echo "Installing dependencies..."
+          npm install
+
+      - name: Cache dependencies for future runs
+        uses: actions/cache@v4
+        with:
+          path: package.json
+          key: nodepkgs-${{ hashFiles('**/package.json') }}
+
+      # - name: Store the cache artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package
+      #     path: package.json
+
+      - name: Code linting
+        run: npm run lint:all
+
+      - name: Run URL Checker
+        run: "node script/url-checker.js -t ${{ env.URL_CHECKER_TIMEOUT }} "
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+ 
+      - name: Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pages
+        uses: actions/configure-pages@v4
+
+      - name: Install dependencies
+        run: |
+          echo "Installing dependencies..."
+          npm install
+
+      - name: Cache dependencies for future runs
+        uses: actions/cache@v4
+        with:
+          path: package.json
+          key: nodepkgs-${{ hashFiles('**/package.json') }}
+
+      # - name: Store the cache artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package
+      #     path: package.json
+      #     overwrite: true
+
+      - name: Build Static pages
+        run: |
+          echo "Extract repo name"
+          REPO_NAME=${{ github.repository }}
+          echo "PATH_PREFIX=/'${REPO_NAME##*/}'/" >> $GITHUB_OUTPUT
+          echo PATH_PREFIX=$PATH_PREFIX
+          npm run prod
+
+      - name: Upload Site Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: corpx-site
+          path: _site/
+ 
+  deploy:
+    needs: [test, build]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # - name: Download Artifact
+      #   uses: actions/download-artifact@v8
+      #   with:
+      #     name: corpx-site
+
+      # - name: Display structure of downloaded files
+      #   run: ls -R
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: corpx-site
+
+      - name: Create status page as issue
+        run: |
+          echo "# Deployment Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment URL: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "Creating issue for deployment status..."
+          today=$(date -u +'%Y-%m-%d')
+          gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
+          gh issue create \
+            --title "${today} - Deployment: ${{ job.status }}" \
+            --body "URL: ${{ steps.deployment.outputs.page_url }}"
+      
