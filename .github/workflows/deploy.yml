@@ -1,9 +1,6 @@
-name: corpXdeploy
-
-run-name: Site Deploy
+name: Deployment Workflow
 
 on:
-  workflow_dispatch:
   # workflow trigger events
   # push:
   #   branches:
@@ -21,6 +18,7 @@ on:
       - "README.md"
       - "CONTRIBUTING.md"
       - "LICENSE"
+  workflow_dispatch:
 
 permissions:
   contents: read
