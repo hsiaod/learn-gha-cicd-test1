@@ -60,11 +60,11 @@ jobs:
           path: package.json
           key: nodepkgs-${{ hashFiles('**/package.json') }}
 
-      - name: Store the cache artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: package
-          path: package.json
+      # - name: Store the cache artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package
+      #     path: package.json
 
       - name: Code linting
         run: npm run lint:all
@@ -99,11 +99,12 @@ jobs:
           path: package.json
           key: nodepkgs-${{ hashFiles('**/package.json') }}
 
-      - name: Store the cache artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: package
-          path: package.json
+      # - name: Store the cache artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: package
+      #     path: package.json
+      #     overwrite: true
 
       - name: Build Static pages
         run: |
@@ -118,8 +119,7 @@ jobs:
         with:
           name: corpx-site
           path: _site/
-          overwrite: true
-
+ 
   deploy:
     needs: [test, build]
     environment:
@@ -138,6 +138,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: corpx-site
 
       - name: Create status page as issue
         run: |
