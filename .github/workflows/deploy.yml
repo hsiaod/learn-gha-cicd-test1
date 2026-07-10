@@ -147,5 +147,5 @@ jobs:
           gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
           gh issue create \
             --title "${today} - Deployment: ${{ job.status }}" \
-            --body "URL: ${{ steps.deployment.outputs.page_url }}
+            --body "URL: ${{ steps.deployment.outputs.page_url }}"
       
