@@ -128,6 +128,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+      
       # - name: Download Artifact
       #   uses: actions/download-artifact@v8
       #   with:
@@ -141,8 +143,6 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: corpx-site
-
-      - uses: actions/checkout@v4
 
       - name: Create status page as issue
         run: |
