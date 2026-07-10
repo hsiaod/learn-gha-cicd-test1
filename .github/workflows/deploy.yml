@@ -142,11 +142,14 @@ jobs:
         with:
           artifact_name: corpx-site
 
+      - uses: actions/checkout@v4
+
       - name: Create status page as issue
         run: |
           echo "# Deployment Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "Deployment URL: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-          
+
+          echo "Creating issue for deployment status..."
           today=$(date -u +'%Y-%m-%d')
           gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
           gh issue create \
