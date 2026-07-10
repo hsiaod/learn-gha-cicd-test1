@@ -2,14 +2,14 @@ name: Deployment Workflow
 
 on:
   # workflow trigger events
-  # push:
-  #   branches:
-  #     - main
-  #   paths-ignore:
-  #     - ".gitignore"
-  #     - "README.md"
-  #     - "CONTRIBUTING.md"
-  #     - "LICENSE"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "LICENSE"
   pull_request:
     branches:
       - main
@@ -19,7 +19,7 @@ on:
       - "CONTRIBUTING.md"
       - "LICENSE"
   
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
@@ -60,12 +60,6 @@ jobs:
           path: package.json
           key: nodepkgs-${{ hashFiles('**/package.json') }}
 
-      # - name: Store the cache artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: package
-      #     path: package.json
-
       - name: Code linting
         run: npm run lint:all
 
@@ -99,13 +93,6 @@ jobs:
           path: package.json
           key: nodepkgs-${{ hashFiles('**/package.json') }}
 
-      # - name: Store the cache artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: package
-      #     path: package.json
-      #     overwrite: true
-
       - name: Build Static pages
         run: |
           echo "Extract repo name"
@@ -128,13 +115,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # GH CLI commands require a checkout of the repository to be able to run, even if no data files are required.
       - uses: actions/checkout@v4
-      
+
+      # Step not required, as the artifacts are automatically downloaded with the deploy-pages step.
       # - name: Download Artifact
       #   uses: actions/download-artifact@v8
       #   with:
       #     name: corpx-site
-
+      # 
       # - name: Display structure of downloaded files
       #   run: ls -R
 
