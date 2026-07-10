@@ -79,14 +79,14 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Setup pages
-        uses: actions/configure-pages@v4
  
       - name: Setup
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
+      - name: Setup pages
+        uses: actions/configure-pages@v4
 
       - name: Install dependencies
         run: |
@@ -123,7 +123,8 @@ jobs:
   deploy:
     needs: [test, build]
     environment:
-      name: corpXdocs
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
@@ -143,6 +144,9 @@ jobs:
 
       - name: Create status page as issue
         run: |
+          echo "# Deployment Status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment URL: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          
           today=$(date -u +'%Y-%m-%d')
           gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
           gh issue create \
