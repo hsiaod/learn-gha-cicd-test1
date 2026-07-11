@@ -97,7 +97,7 @@ jobs:
           echo "Extract repo name"
           REPO_NAME="${{ github.repository }}"
           PATH_PREFIX=/${REPO_NAME##*/}/
-          echo "PATH_PREFIX=$PATH_PREFIX" >> $GITHUB_OUTPUTS
+          echo "PATH_PREFIX=$PATH_PREFIX" >> $GITHUB_OUTPUT
           echo "PATH_PREFIX = $PATH_PREFIX"
           npm run prod
 
