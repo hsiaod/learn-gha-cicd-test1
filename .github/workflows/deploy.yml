@@ -97,7 +97,7 @@ jobs:
           REPO_NAME="${{ github.repository }}"
           PATH_PREFIX=/${REPO_NAME##*/}/
           echo "PATH_PREFIX=$PATH_PREFIX" >> $GITHUB_ENV
-          echo "PATH_PREFIX: ${{ env.PATH_PREFIX }}"
+          echo "PATH_PREFIX: $PATH_PREFIX"
           npm run prod
 
       - name: Upload Site Artifact
@@ -107,7 +107,8 @@ jobs:
           path: _site/
  
   deploy:
-    if: ${{ contains( github.ref, 'main') }}
+    # # Only deploy from the default branch
+    # if: ${{ github.ref == github.event.repository.default_branch }}
     needs: [test, build]
     environment:
       name: github-pages
