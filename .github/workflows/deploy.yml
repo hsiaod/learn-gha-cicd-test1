@@ -33,7 +33,6 @@ concurrency:
 env:
   # URL checker timeout in seconds
   URL_CHECKER_TIMEOUT: 120
-  PATH_PREFIX: ${{ github.jobs.build.outputs.PATH_PREFIX }}
 
 jobs:
   test:
