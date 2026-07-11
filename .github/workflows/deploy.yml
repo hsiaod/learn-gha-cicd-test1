@@ -97,8 +97,8 @@ jobs:
         run: |
           echo "Extract repo name"
           REPO_NAME=${{ github.repository }}
-          echo "PATH_PREFIX=/'${REPO_NAME##*/}'/" >> $GITHUB_OUTPUT
-          echo PATH_PREFIX=$PATH_PREFIX
+          PATH_PREFIX=$(/'${REPO_NAME##*/}'/)
+          echo PATH_PREFIX=${PATH_PREFIX}
           npm run prod
 
       - name: Upload Site Artifact
