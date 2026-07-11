@@ -67,6 +67,8 @@ module.exports = config => {
   // when deploying to Pages, set the PATH_PREFIX environment variable to your 
   // repository name
   const pathPrefix = process.env.PATH_PREFIX || '/';
+  console.log(`process.env: ${process.env.PATH_PREFIX}`);
+  console.log(`PATH_PREFIX: ${pathPrefix}`);
 
   return {
     markdownTemplateEngine: 'njk',

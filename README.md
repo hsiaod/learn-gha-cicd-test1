@@ -1,6 +1,26 @@
-# CorpX Documentation
+<H1>Table of Contents</H1>
 
+- [CorpX Documentation](#corpx-documentation)
+  - [Why Documentation Matters](#why-documentation-matters)
+  - [Your task](#your-task)
+  - [Setup](#setup)
+    - [Test your environment](#test-your-environment)
+  - [Requirements](#requirements)
+    - [`test` job](#test-job)
+    - [`build` job](#build-job)
+    - [`deploy` job](#deploy-job)
+  - [Deliverables](#deliverables)
+  - [Project Structure](#project-structure)
+    - [Important tips to run the project](#important-tips-to-run-the-project)
+  - [Project Rubric](#project-rubric)
+    - [Workflow Setup](#workflow-setup)
+    - [Test Job](#test-job-1)
+    - [Build Job](#build-job-1)
+    - [Deploy Job](#deploy-job-1)
+
+# CorpX Documentation
 Welcome to CorpX documentation! Our documentation serves as a vital resource for understanding our products, services, and processes. It ensures clarity, consistency, and accessibility for both internal teams and external users. We value your contributions to keeping our documentation robust and up-to-date.
+
 
 ## Why Documentation Matters
 
@@ -132,9 +152,11 @@ The job should fail if any of its steps fail.
 
 Once you've successfully completed your project, you need to submit the following:
 
-1. The `deploy.yml` workflow file
-2. The link to your repository
-3. The link to your published knowledge base website on GitHub pages
+1. The [`deploy.yml`](.github/workflows/deploy.yml) workflow file
+2. The link to your [repository](https://github.com/hsiaod/learn-gha-cicd-test1)\
+   https://github.com/hsiaod/learn-gha-cicd-test1
+3. The link to your [published knowledge base website on GitHub pages](https://hsiaod.github.io/learn-gha-cicd-test1/)\
+   https://hsiaod.github.io/learn-gha-cicd-test1/
 
 ## Project Structure
 
