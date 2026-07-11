@@ -33,6 +33,7 @@ concurrency:
 env:
   # URL checker timeout in seconds
   URL_CHECKER_TIMEOUT: 120
+  PATH_PREFIX: ${{ github.jobs.build.outputs.PATH_PREFIX }}
 
 jobs:
   test:
@@ -107,8 +108,8 @@ jobs:
           path: _site/
  
   deploy:
-    # # Only deploy from the default branch
-    # if: ${{ github.event.repository.default_branch == github.ref_name }}
+    # Only deploy from the default branch
+    if: ${{ github.event.repository.default_branch == github.ref_name }}
     needs: [test, build]
     environment:
       name: github-pages
