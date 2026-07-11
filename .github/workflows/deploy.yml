@@ -3,16 +3,14 @@ name: Deployment Workflow
 on:
   # workflow trigger events
   push:
-    branches:
-      - main
+    branches: [main, dev]
     paths-ignore:
       - ".gitignore"
       - "README.md"
       - "CONTRIBUTING.md"
       - "LICENSE"
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - ".gitignore"
       - "README.md"
@@ -98,7 +96,8 @@ jobs:
           echo "Extract repo name"
           REPO_NAME="${{ github.repository }}"
           PATH_PREFIX=/${REPO_NAME##*/}/
-          echo PATH_PREFIX = $PATH_PREFIX
+          echo "PATH_PREFIX=$PATH_PREFIX" >> $GITHUB_ENV
+          echo "PATH_PREFIX: ${{ env.PATH_PREFIX }}"
           npm run prod
 
       - name: Upload Site Artifact
@@ -108,6 +107,7 @@ jobs:
           path: _site/
  
   deploy:
+    if: ${{ contains( github.ref, 'main') }}
     needs: [test, build]
     environment:
       name: github-pages
