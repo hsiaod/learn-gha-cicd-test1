@@ -30,14 +30,12 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: ${{ contains(github.ref, 'main/')}}
 
-env:
-  # URL checker timeout in seconds
-  URL_CHECKER_TIMEOUT: 120
-  PATH_PREFIX: ${{ github.jobs.build.outputs.PATH_PREFIX }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # URL checker timeout in seconds
+      URL_CHECKER_TIMEOUT: 120
 
     steps:
       - name: Checkout
@@ -68,6 +66,10 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+
+    env:
+      # Path prefix for the site, required for the 11ty static site generator.
+      PATH_PREFIX: ${{ github.jobs.build.outputs.PATH_PREFIX }}
 
     steps:
       - name: Check out code
